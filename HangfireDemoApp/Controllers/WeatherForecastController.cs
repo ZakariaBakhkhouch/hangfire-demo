@@ -1,3 +1,4 @@
+using Hangfire;
 using Microsoft.AspNetCore.Mvc;
 
 namespace HangfireDemoApp.Controllers
@@ -21,6 +22,13 @@ namespace HangfireDemoApp.Controllers
         [HttpGet(Name = "GetWeatherForecast")]
         public IEnumerable<WeatherForecast> Get()
         {
+            //BackgroundJob.Enqueue(() => SendMessage("elhelaly@outlook.com"));
+
+            //Console.WriteLine(DateTime.Now);
+            //BackgroundJob.Schedule(() => SendMessage("elhelaly@outlook.com"), TimeSpan.FromMinutes(1));
+
+            RecurringJob.AddOrUpdate(() => SendMessage("elhelaly@outlook.com"), Cron.Minutely);
+
             return Enumerable.Range(1, 5).Select(index => new WeatherForecast
             {
                 Date = DateTime.Now.AddDays(index),
@@ -28,6 +36,12 @@ namespace HangfireDemoApp.Controllers
                 Summary = Summaries[Random.Shared.Next(Summaries.Length)]
             })
             .ToArray();
+        }
+
+        [ApiExplorerSettings(IgnoreApi = true)]
+        public void SendMessage(string email)
+        {
+            Console.WriteLine($"Email sent at {DateTime.Now}");
         }
     }
 }
